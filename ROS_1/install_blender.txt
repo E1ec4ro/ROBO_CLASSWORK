@@ -1,0 +1,36 @@
+#Добавление модуля для взаимодействия python с blender
+import bpy
+
+#Создание опорной плиты
+def Draw_Base_Plate():
+bpy.ops.mesh.primitive_cylinder_add(radius=0.15б depth=0.005, location=(0,0,0.09))
+
+#Изменение рабочего пространства
+bpy.ops.object.select_pattern(pattern="Cube")
+bpy.data.object[''Cylinder].select = False
+bpy.ops.object.delete(use_global=False)
+
+#Функция для создания двигателей и колес
+def Draw_Motor_Wheels():
+
+bpy.ops.mesh.primitive_cylinder_add(radius=0.045, depth=0.01, location=(0,0,0.07))
+bpy.context.object.rotation_euler[1] = 1.5708
+bpy.context.object.location[0] = 0.135
+
+bpy.ops.mesh.primitive_cylinder_add(radius=0.045, depth=0.01, location=(0,0,0.07))
+bpy.context.object.rotation_euler[1] = 1.5708
+bpy.context.object.location[0] = -0.135
+
+bpy.ops.mesh.primitive_cylinder_add(radius=0.018, depth=0.06,
+location=(0.075,0,0.075))
+bpy.context.object.rotation_euler[1] = 1.5708
+bpy.ops.mesh.primitive_cylinder_add(radius=0.018, depth=0.06,
+location=(-0.075,0,0.075))
+bpy.context.object.rotation_euler[1] = 1.5708
+
+bpy.ops.mesh.primitive_cylinder_add(radius=0.006,
+depth=0.04, location=(0.12,0,0.075))
+bpy.context.object.rotation_euler[1] = 1.5708
+bpy.ops.mesh.primitive_cylinder_add(radius=0.006,
+depth=0.04, location=(-0.12,0,0.075))
+bpy.context.object.rotation_euler[1] = 1.5708
