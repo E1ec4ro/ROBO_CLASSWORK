@@ -13,14 +13,21 @@ bpy.ops.object.delete(use_global=False)
 #Функция для создания двигателей и колес
 def Draw_Motor_Wheels():
 
+#Создание первого колеса
 bpy.ops.mesh.primitive_cylinder_add(radius=0.045, depth=0.01, location=(0,0,0.07))
+#Поворот
 bpy.context.object.rotation_euler[1] = 1.5708
+#Перемещение
 bpy.context.object.location[0] = 0.135
 
+#Создание второго колеса
 bpy.ops.mesh.primitive_cylinder_add(radius=0.045, depth=0.01, location=(0,0,0.07))
+#Поворот
 bpy.context.object.rotation_euler[1] = 1.5708
+#Перемещение
 bpy.context.object.location[0] = -0.135
 
+#Добавление двигателей
 bpy.ops.mesh.primitive_cylinder_add(radius=0.018, depth=0.06,
 location=(0.075,0,0.075))
 bpy.context.object.rotation_euler[1] = 1.5708
@@ -28,9 +35,47 @@ bpy.ops.mesh.primitive_cylinder_add(radius=0.018, depth=0.06,
 location=(-0.075,0,0.075))
 bpy.context.object.rotation_euler[1] = 1.5708
 
+#Добавление валов двигателей
 bpy.ops.mesh.primitive_cylinder_add(radius=0.006,
 depth=0.04, location=(0.12,0,0.075))
 bpy.context.object.rotation_euler[1] = 1.5708
 bpy.ops.mesh.primitive_cylinder_add(radius=0.006,
 depth=0.04, location=(-0.12,0,0.075))
 bpy.context.object.rotation_euler[1] = 1.5708
+
+#Добавление опорного колеса
+bpy.ops.mesh.primitive_cylinder_add(radius=0.015, depth=0.05,
+location=(0,0.125,0.065))
+bpy.ops.mesh.primitive_cylinder_add(radius=0.015, depth=0.05,
+location=(0,-0.125,0.065))
+
+#Добавление датчика Kinect
+bpy.ops.mesh.primitive_cube_add(radius=0.04, location=(0,0,0.26))
+
+#Нарисовать среднюю плиту
+def Draw_Middle_Plate():
+bpy.ops.mesh.primitive_cylinder_add(radius=0.15, depth=0.005, location=(0,0,0.22))
+# Нарисовать верхнюю плиту
+def Draw_Top_Plate():
+bpy.ops.mesh.primitive_cylinder_add(radius=0.15, depth=0.005, location=(0,0,0.37))
+
+# Добавление стоек
+def Draw_Support_Tubes():
+
+# Трубки
+bpy.ops.mesh.primitive_cylinder_add(radius=0.007,depth=0.30,
+location=(0.09,0.09,0.23))
+bpy.ops.mesh.primitive_cylinder_add(radius=0.007,depth=0.30,
+location=(-0.09,0.09,0.23))
+bpy.ops.mesh.primitive_cylinder_add(radius=0.007,depth=0.30,
+location=(-0.09,-0.09,0.23))
+bpy.ops.mesh.primitive_cylinder_add(radius=0.007,depth=0.30,
+location=(0.09,-0.09,0.23))
+
+# Основной код
+if __name__ == "__main__":
+Draw_Base_Plate()
+Draw_Motors_Wheels()
+Draw_Middle_Plate()
+Draw_Top_Plate()
+Draw_Support_Tubes()
