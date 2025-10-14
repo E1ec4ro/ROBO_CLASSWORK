@@ -1,0 +1,30 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/universal_robots/protos/UR10e.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.748326078067819 0.4261229389113865 0.5083574744381747 2.534749123566569
+  position -1.0947795112265872 1.3768692478294076 3.1412131083661206
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+UR10e {
+  hidden translation_1 0 0 0.181
+  hidden rotation_1 0 0 -1 0.00025857447781405354
+  hidden translation_2 0 0.176 0
+  hidden rotation_2 0 1 0 1.5708766118399
+  hidden translation_3 0 -0.137 0.613
+  hidden rotation_3 0 1 0 1.7981225717509753e-05
+  hidden translation_4 0 0 0.571
+  hidden rotation_4 0 1 0 1.5707990826059048
+  hidden translation_5 0 0.135 0
+  hidden rotation_5 0 0 1 3.027687148588299e-06
+  hidden translation_6 0 0 0.12
+  rotation 0.2157380479632118 0.3736720830753473 0.9021232005614055 2.18123
+}
