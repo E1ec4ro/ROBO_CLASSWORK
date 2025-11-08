@@ -1,0 +1,175 @@
+#include <DynamixelWorkbench.h>
+
+#define BAUDRATE 1000000
+#define ACCELERATION 50
+#define DXL_ID1 1
+#define DXL_ID2 2
+
+uint8_t id1 = DXL_ID1;
+uint8_t id2 = DXL_ID2;
+int32_t acc = ACCELERATION;
+int32_t millRequest;
+int32_t millSerial;
+
+DynamixelWorkbench dx;
+
+double* goalWheelVel;
+double* realWheelVel;
+double* goalRobotVel;
+double* realRobotVel;
+double* odometry;
+double X, Y, A;
+
+bool turtleMove(uint8_t id, float vel);
+double getRealWheelVel(uint8_t id);
+void setGoalRobotVel (double *goalRobotVel, double *goalWheelVel);
+void calcOdometry(double *realWheelVel, double *realRobotVel, double *odometry);
+void serialPrint(double *realWheelVel, double *realRobotVel, double *odometry);
+
+double L = 0.155;
+double R = 0.05;
+
+void setup(){
+  Serial.begin(9600);
+  Serial.setTimeout(3);
+  while(!Serial);
+
+  const char *log;
+  bool rez;
+
+  millRequest = millis();
+  millSerial = millis();
+
+  goalWheelVel = new double[2];
+  realWheelVel = new double[2];
+  goalRobotVel = new double[2];
+  realRobotVel = new double[4];
+  odometry = new double[2];
+
+  goalWheelVel [0] = 0.0;
+  goalWheelVel [1] = 0.0;
+  
+  realWheelVel [0] = 0.0;
+  realWheelVel [1] = 0.0;
+
+  goalRobotVel [0] = 0.0;
+  goalRobotVel [1] = 0.0;
+  
+  realRobotVel [0] = 0.0;
+  realRobotVel [1] = 0.0;
+  realRobotVel [2] = 0.0;
+  realRobotVel [3] = 0.0;
+
+  odometry[0] = 0.0;
+  odometry[1] = 0.0;
+
+  dx.init("", BAUDRATE);
+
+  dx.ping(id1);
+  dx.ping(id2);
+
+  dx.wheelMode(id1, acc);
+  dx.wheelMode(id2, acc);
+}
+
+void loop()
+{
+  if (Serial.available() > 0){
+    String str = Serial.readString();
+    parsing(str);
+  }
+
+  setGoalRobotVel(goalRobotVel, goalWheelVel);
+
+  turtleMove(id1, goalWheelVel[0]);
+  turtleMove(id2, goalWheelVel[1]);
+
+  if (millis() - millRequest > 100){
+    realWheelVel[0] = getRealWheelVel(id1);
+    realWheelVel[1] = getRealWheelVel(id2);
+
+    calcOdometry(realWheelVel, realRobotVel, odometry);
+
+    millRequest = millis();
+  }
+
+  if(millis() - millSerial > 500){
+    serialPrint(realWheelVel, realRobotVel, odometry);
+    millSerial = millis();
+  }
+
+  dx.ping(id1);
+  dx.ping(id2);
+
+}
+
+bool turtleMove(uint8_t id, float vel)
+{
+  return dx.goalVelocity(id, vel);
+}
+
+void parsing(String str){
+  int divider = str.indexOf(';');
+  String buf = str.substring(0, divider);
+  goalRobotVel[0] = buf.toFloat();
+  buf = str.substring(divider + 1);
+  goalRobotVel[1] = buf.toFloat();
+}
+
+double getRealWheelVel(uint8_t id){
+  int32_t tempVel = 0;
+  dx.itemRead(id, "Present_Velocity", &tempVel);
+  delay(5);
+  double vel = tempVel * 0.0247;
+  return vel;
+}
+
+void setGoalRobotVel(double *goalRobotVel, double *goalWheelVel)
+{
+  goalWheelVel [0] = (2 * goalRobotVel[0] - L * goalRobotVel[1])/(2 * R);
+  goalWheelVel [1] = (2 * goalRobotVel[0] + L * goalRobotVel[1])/(2 * R);
+}
+
+void calcOdometry(double *realWheelVel, double *realRobotVel, double *odometry){
+  realRobotVel[0] = (R * (realWheelVel[0] + realWheelVel[1])) / 2;
+  realRobotVel[1] = (R * (realWheelVel[1] + realWheelVel[0])) / L;
+
+  double delta_s = ((realRobotVel[0] + realRobotVel[2]) / 2) * 0.1;
+  double delta_a = ((realRobotVel[1] + realRobotVel[3]) / 2) * 0.1;
+
+  odometry[0] += delta_s;
+  odometry[1] += delta_a;
+
+  A += delta_a;
+  X += (delta_s * cos(A));
+  Y += (delta_s * sin(A));
+
+  realRobotVel[2] = realRobotVel[0];
+  realRobotVel[3] = realRobotVel[1];
+}
+
+void serialPrint(double *realWheelVel, double *realRobotVel, double *odometry){
+  Serial.print("Real_Velocity_Wheel_Left: ");
+  Serial.println(realWheelVel[0]);
+  Serial.print("Real_Velocity_Wheel_Right: ");
+  Serial.println(realWheelVel[1]);
+
+  Serial.print("Real_Velocity_Robot_Linear: ");
+  Serial.println(realRobotVel[0]);
+  Serial.print("Real_Velocity_Robot_Angular: ");
+  Serial.println(realRobotVel[1]);
+
+  Serial.print("Odometry_Linear: ");
+  Serial.println(odometry[0]);
+  Serial.print("Odometry_Angular: ");
+  Serial.println(odometry[1]);
+
+  Serial.print("X: ");
+  Serial.println(X);
+  Serial.print("Y: ");
+  Serial.println(Y);
+  Serial.print("A: ");
+  Serial.println(A * 57.29);
+  Serial.println(A);
+  Serial.print(" ");
+}
