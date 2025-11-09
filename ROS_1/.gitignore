@@ -1,0 +1,29 @@
+# Docker
+workspace/
+config/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ROS
+devel/
+build/
+install/
+.catkin_workspace
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+

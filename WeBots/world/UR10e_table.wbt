@@ -1,0 +1,79 @@
+#VRML_SIM R2025a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/robots/universal_robots/protos/UR10e.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2025a/projects/objects/floors/protos/Floor.proto"
+
+WorldInfo {
+  title "UR10e на столе"
+  basicTimeStep 16
+}
+Viewpoint {
+  orientation 0.07283576221574856 0.07328353490044687 -0.9946479152217362 2.251403020281064
+  position 3.4729132836517476 3.6643188464183565 1.327705239583334
+  follow "UR10e"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+  appearance PBRAppearance {
+    baseColor 0.5 0.5 0.5
+    roughness 0.8
+    metalness 0
+  }
+}
+Solid {
+  translation 1.2649069415421072e-05 1.2823501519237053e-05 -0.982560796224108
+  rotation -1.3095369036094015e-10 -8.859670659208314e-10 1 8.889086140779344e-09
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.6 0.6 0.6
+        roughness 0.7
+        metalness 0.1
+      }
+      geometry Box {
+        size 10 10 0.1
+      }
+    }
+  ]
+  name "floor_platform"
+  boundingObject Box {
+    size 10 10 0.1
+  }
+  physics Physics {
+  }
+  linearVelocity -2.2327604735663706e-20 3.5381755242231054e-20 -0.006746411340472233
+  angularVelocity -9.777909242538331e-18 6.984220887527353e-18 4.016377636372062e-21
+}
+UR10e {
+  hidden position_0_0 0.00012094528820974344
+  hidden rotation_1 0 0 -1 0.00013762898018597347
+  hidden position_1_0 0.2910809461730639
+  hidden linearVelocity_1 3.940608440401469e-09 6.509877498389616e-10 -2.847079054755982e-09
+  hidden angularVelocity_1 -8.937458797835338e-10 1.3045359444948035e-10 -2.4999597867655185e-07
+  hidden rotation_2 0 1 0 1.8619575580129637
+  hidden position_2_0 -0.22038748639058628
+  hidden linearVelocity_2 -9.561693059492702e-06 -7.086868162878937e-08 -3.2084592164297354e-05
+  hidden angularVelocity_2 1.3647143299286599e-08 0.00010926035667631581 -2.498830124887408e-07
+  hidden rotation_3 0 -1 0 0.2203695051895661
+  hidden position_3_0 0.32863827389238864
+  hidden linearVelocity_3 -1.920549917563819e-05 -1.423776658592511e-07 -6.416600370379927e-05
+  hidden angularVelocity_3 -1.8571637075273382e-08 -0.00011985703225045903 -2.501828942454533e-07
+  hidden rotation_4 0 1 0 1.899437356498293
+  hidden position_4_0 -0.0006477847790102594
+  hidden linearVelocity_4 -1.3749896120392109e-05 -2.843922874730455e-07 3.852579315089052e-06
+  hidden angularVelocity_4 -1.5422749505533557e-08 -9.003511314279923e-05 -2.5147511205301106e-07
+  hidden rotation_5 0 0 -1 0.0006447595860984775
+  hidden position_5_0 0.00012169727885835856
+  hidden linearVelocity_5 -4.511990215023209e-06 -2.7445543734489027e-07 -4.6264288250970213e-08
+  hidden angularVelocity_5 3.730601845896326e-06 -9.003699302092111e-05 8.623335645492318e-06
+  hidden rotation_6 0 1 0 0.00012169727899773092
+  hidden linearVelocity_6 -4.366593693235937e-06 -2.7401254054538636e-07 -1.1122820733083356e-07
+  hidden angularVelocity_6 3.730264762758564e-06 -9.013189246518304e-05 8.62298498162124e-06
+  translation 0.35 0.35 0.19
+  controller "ur10e_remote_control"
+}

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Примеры HTTP команд для UR10e</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        .example {
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        code {
+            background: #e8e8e8;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+        .button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            display: none;
+        }
+        .result.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .result.show {
+            display: block;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 5px;
+        }
+        .endpoint {
+            font-weight: bold;
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Примеры HTTP команд для управления UR10e</h1>
+        <p>Базовый URL: <code>http://localhost:10002</code></p>
+
+        <div class="section">
+            <h2>1. JavaScript (в браузере)</h2>
+            
+            <div class="example">
+                <h3>Отправить команду</h3>
+                <pre><code>// Простая команда
+fetch('http://localhost:10002/command?cmd=vel%201%200.5')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Ошибка:', error));
+
+// С обработкой результата
+async function sendCommand(command) {
+    try {
+        const encodedCmd = encodeURIComponent(command);
+        const response = await fetch(`http://localhost:10002/command?cmd=${encodedCmd}`);
+        const result = await response.json();
+        
+        if (result.status === 'ok') {
+            console.log('✅ Успешно:', result.message);
+        } else {
+            console.error('❌ Ошибка:', result.message);
+        }
+        return result;
+    } catch (error) {
+        console.error('Ошибка подключения:', error);
+    }
+}
+
+// Использование
+sendCommand('vel 1 0.5');
+sendCommand('status');
+sendCommand('home');</code></pre>
+            </div>
+
+            <div class="example">
+                <h3>Получить статус</h3>
+                <pre><code>fetch('http://localhost:10002/status')
+    .then(response => response.json())
+    .then(data => {
+        console.log('Статус робота:', data);
+        if (data.data && data.data.motors) {
+            data.data.motors.forEach(motor => {
+                console.log(`Сустав ${motor.joint}: ${motor.velocity} рад/с`);
+            });
+        }
+    });</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Python (requests)</h2>
+            
+            <div class="example">
+                <h3>Базовый пример</h3>
+                <pre><code>import requests
+
+BASE_URL = 'http://localhost:10002'
+
+# Отправить команду
+def send_command(command):
+    url = f"{BASE_URL}/command?cmd={command}"
+    response = requests.get(url)
+    return response.json()
+
+# Примеры использования
+result = send_command('vel 1 0.5')
+print(result)
+
+result = send_command('status')
+print(result)
+
+result = send_command('home')
+print(result)</code></pre>
+            </div>
+
+            <div class="example">
+                <h3>Полный пример с обработкой ошибок</h3>
+                <pre><code>import requests
+import time
+
+BASE_URL = 'http://localhost:10002'
+
+def send_command(command, timeout=5):
+    """Отправляет команду на робота"""
+    try:
+        url = f"{BASE_URL}/command?cmd={command}"
+        response = requests.get(url, timeout=timeout)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.ConnectionError:
+        return {"status": "error", "message": "Не удается подключиться к серверу"}
+    except requests.exceptions.Timeout:
+        return {"status": "error", "message": "Таймаут запроса"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+def get_status():
+    """Получает статус робота"""
+    try:
+        response = requests.get(f"{BASE_URL}/status", timeout=5)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# Пример последовательности команд
+commands = [
+    'home',           # Вернуться в исходное положение
+    'vel 1 0.5',     # Вращать сустав 1
+    'vel 2 0.3',     # Вращать сустав 2
+    'stop'           # Остановить
+]
+
+for cmd in commands:
+    print(f"Отправка: {cmd}")
+    result = send_command(cmd)
+    print(f"Результат: {result}")
+    time.sleep(2)  # Пауза между командами</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. cURL (командная строка)</h2>
+            
+            <div class="example">
+                <h3>Базовые команды</h3>
+                <pre><code># Отправить команду (Windows PowerShell)
+curl "http://localhost:10002/command?cmd=vel%201%200.5"
+
+# Отправить команду (Linux/Mac)
+curl "http://localhost:10002/command?cmd=vel%201%200.5"
+
+# Получить статус
+curl "http://localhost:10002/status"
+
+# Вернуть в исходное положение
+curl "http://localhost:10002/command?cmd=home"
+
+# Остановить все моторы
+curl "http://localhost:10002/command?cmd=stop"</code></pre>
+            </div>
+
+            <div class="example">
+                <h3>С форматированием JSON (jq)</h3>
+                <pre><code># Linux/Mac с jq
+curl "http://localhost:10002/status" | jq .
+
+# Windows PowerShell
+curl "http://localhost:10002/status" | ConvertFrom-Json</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>4. Интерактивный тестер</h2>
+            <p>Попробуйте команды прямо здесь:</p>
+            
+            <div style="margin: 20px 0;">
+                <input type="text" id="commandInput" placeholder="Введите команду (например: vel 1 0.5)" 
+                       style="width: 400px; padding: 10px; font-size: 14px;">
+                <button class="button" onclick="testCommand()">Отправить</button>
+                <button class="button" onclick="getStatus()">Статус</button>
+            </div>
+            
+            <div id="result" class="result"></div>
+        </div>
+
+        <div class="section">
+            <h2>5. Список всех доступных команд</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background: #4CAF50; color: white;">
+                    <th style="padding: 10px; text-align: left;">Команда</th>
+                    <th style="padding: 10px; text-align: left;">Описание</th>
+                    <th style="padding: 10px; text-align: left;">Пример URL</th>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;"><code>help</code></td>
+                    <td style="padding: 10px;">Показать справку</td>
+                    <td style="padding: 10px;"><code>/command?cmd=help</code></td>
+                </tr>
+                <tr style="background: #f9f9f9;">
+                    <td style="padding: 10px;"><code>status</code></td>
+                    <td style="padding: 10px;">Получить статус всех суставов</td>
+                    <td style="padding: 10px;"><code>/status</code></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;"><code>stop</code></td>
+                    <td style="padding: 10px;">Остановить все моторы</td>
+                    <td style="padding: 10px;"><code>/command?cmd=stop</code></td>
+                </tr>
+                <tr style="background: #f9f9f9;">
+                    <td style="padding: 10px;"><code>home</code></td>
+                    <td style="padding: 10px;">Вернуть в исходное положение</td>
+                    <td style="padding: 10px;"><code>/command?cmd=home</code></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;"><code>vel &lt;j&gt; &lt;v&gt;</code></td>
+                    <td style="padding: 10px;">Установить скорость сустава j (1-6) в рад/с</td>
+                    <td style="padding: 10px;"><code>/command?cmd=vel%201%200.5</code></td>
+                </tr>
+                <tr style="background: #f9f9f9;">
+                    <td style="padding: 10px;"><code>vel_all &lt;v1&gt; ... &lt;v6&gt;</code></td>
+                    <td style="padding: 10px;">Установить скорости всех суставов</td>
+                    <td style="padding: 10px;"><code>/command?cmd=vel_all%200.5%200.3%200.4%200.2%200.3%200.25</code></td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px;"><code>pos &lt;j&gt; &lt;p&gt;</code></td>
+                    <td style="padding: 10px;">Установить позицию сустава j в радианах</td>
+                    <td style="padding: 10px;"><code>/command?cmd=pos%201%201.57</code></td>
+                </tr>
+                <tr style="background: #f9f9f9;">
+                    <td style="padding: 10px;"><code>pos_all &lt;p1&gt; ... &lt;p6&gt;</code></td>
+                    <td style="padding: 10px;">Установить позиции всех суставов</td>
+                    <td style="padding: 10px;"><code>/command?cmd=pos_all%200%200.5%200%200%200%200</code></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>6. Примеры последовательностей команд</h2>
+            
+            <div class="example">
+                <h3>Последовательность движений (Python)</h3>
+                <pre><code>import requests
+import time
+
+BASE_URL = 'http://localhost:10002'
+
+def cmd(c):
+    requests.get(f"{BASE_URL}/command?cmd={c}")
+
+# Последовательность: домой → вращение → остановка
+cmd('home')
+time.sleep(3)
+
+cmd('vel 1 0.5')
+cmd('vel 2 0.3')
+time.sleep(5)
+
+cmd('stop')</code></pre>
+            </div>
+
+            <div class="example">
+                <h3>Циклическое движение (Python)</h3>
+                <pre><code>import requests
+import time
+import math
+
+BASE_URL = 'http://localhost:10002'
+
+def cmd(c):
+    requests.get(f"{BASE_URL}/command?cmd={c}")
+
+# Синусоидальное движение сустава 1
+for i in range(100):
+    velocity = 0.5 * math.sin(i * 0.1)
+    cmd(f'vel 1 {velocity:.3f}')
+    time.sleep(0.1)
+
+cmd('stop')</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:10002';
+
+        async function testCommand() {
+            const input = document.getElementById('commandInput');
+            const command = input.value.trim();
+            
+            if (!command) {
+                alert('Введите команду!');
+                return;
+            }
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result show';
+            resultDiv.textContent = 'Отправка команды...';
+
+            try {
+                const encodedCmd = encodeURIComponent(command);
+                const response = await fetch(`${BASE_URL}/command?cmd=${encodedCmd}`);
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    resultDiv.className = 'result show';
+                    resultDiv.innerHTML = `<strong>✅ Успешно:</strong><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    resultDiv.className = 'result show error';
+                    resultDiv.innerHTML = `<strong>❌ Ошибка:</strong><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `<strong>❌ Ошибка подключения:</strong><br>${error.message}<br><br>Убедитесь, что Webots запущен и симуляция активна.`;
+            }
+        }
+
+        async function getStatus() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result show';
+            resultDiv.textContent = 'Получение статуса...';
+
+            try {
+                const response = await fetch(`${BASE_URL}/status`);
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    resultDiv.className = 'result show';
+                    resultDiv.innerHTML = `<strong>✅ Статус:</strong><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    resultDiv.className = 'result show error';
+                    resultDiv.innerHTML = `<strong>❌ Ошибка:</strong><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result show error';
+                resultDiv.innerHTML = `<strong>❌ Ошибка подключения:</strong><br>${error.message}`;
+            }
+        }
+
+        // Позволить отправку по Enter
+        document.getElementById('commandInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                testCommand();
+            }
+        });
+    </script>
+</body>
+</html>
+

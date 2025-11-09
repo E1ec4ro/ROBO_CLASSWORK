@@ -15,6 +15,7 @@ TexturedBackground {
 TexturedBackgroundLight {
 }
 UR10e {
+    controller "ur10e_motor_control"
   hidden translation_1 0 0 0.181
   hidden rotation_1 0 0 -1 0.00025857447781405354
   hidden translation_2 0 0.176 0

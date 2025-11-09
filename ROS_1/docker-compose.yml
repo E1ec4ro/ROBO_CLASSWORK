@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  ros-gazebo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ros_gazebo_rviz
+    image: ros-gazebo:latest
+    ports:
+      - "6080:6080"    # noVNC веб-интерфейс
+      - "5900:5900"    # VNC порт
+      - "11311:11311"  # ROS master
+      - "11312:11312"  # ROS дополнительный порт
+    volumes:
+      - ./workspace:/workspace/catkin_ws/src
+      - ./config:/workspace/config
+    environment:
+      - DISPLAY=:1
+      - ROS_MASTER_URI=http://localhost:11311
+      - ROS_HOSTNAME=localhost
+    privileged: true
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
