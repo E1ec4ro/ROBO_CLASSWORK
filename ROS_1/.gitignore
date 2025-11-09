@@ -1,7 +1,11 @@
 # Docker
-workspace/
+# workspace/ - НЕ игнорируем, содержит необходимые ROS пакеты (test_robot)
+# config/ - игнорируем, пользовательские конфигурации создаются автоматически
 config/
 *.log
+
+# OneDrive проблемы - CMakeLists.txt создается автоматически при catkin_make
+workspace/CMakeLists.txt
 
 # Python
 __pycache__/
@@ -10,20 +14,19 @@ __pycache__/
 *.so
 .Python
 
-# ROS
+# ROS - сгенерированные файлы (создаются при сборке)
 devel/
 build/
 install/
 .catkin_workspace
 
-# IDE
+# IDE - настройки редакторов (не нужны для работы)
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# OS
+# OS - системные файлы
 .DS_Store
 Thumbs.db
-

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+  
+  <!-- Запуск пустого мира Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="worlds/empty.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- Загрузка модели робота -->
+  <param name="robot_description" 
+         command="$(find xacro)/xacro $(find test_robot)/urdf/simple_robot.urdf" />
+
+  <!-- Запуск robot_state_publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+        respawn="false" output="screen">
+    <param name="publish_frequency" type="double" value="30.0" />
+  </node>
+
+  <!-- Запуск joint_state_publisher -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"
+        respawn="false" output="screen">
+    <param name="use_gui" value="false"/>
+  </node>
+
+  <!-- Спавн робота в Gazebo (с задержкой для загрузки Gazebo) -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
+        args="-urdf -model simple_robot -param robot_description -x 0 -y 0 -z 0.1" 
+        respawn="false" output="screen"
+        launch-prefix="bash -c 'sleep 5; $0 $@' " />
+
+</launch>
+

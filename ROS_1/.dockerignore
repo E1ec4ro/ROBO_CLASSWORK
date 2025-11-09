@@ -1,3 +1,4 @@
+# Python кэш
 __pycache__
 *.pyc
 *.pyo
@@ -7,10 +8,32 @@ __pycache__
 *.egg
 *.egg-info
 dist
+
+# ROS сгенерированные файлы (создаются при сборке)
 build
+devel
+install
+
+# Git
 .git
 .gitignore
-README.md
+
+# IDE
 .vscode
 .idea
+
+# Логи
+*.log
+
+# Временные файлы
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# НЕ игнорируем:
+# - workspace/ (нужен для ROS пакетов)
+# - README.md и другие .md файлы (документация)
+# - Dockerfile, docker-compose.yml, supervisord.conf (конфигурация)
 

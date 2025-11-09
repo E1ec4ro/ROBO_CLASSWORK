@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>test_robot</name>
+  <version>0.0.1</version>
+  <description>Простой тестовый робот для Gazebo</description>
+  <maintainer email="user@example.com">User</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>gazebo_ros</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>urdf</depend>
+  <depend>xacro</depend>
+
+  <export>
+  </export>
+</package>
